@@ -1,0 +1,68 @@
+# This is a basic workflow to help you get started with Actions
+
+name: passing job values
+
+# Controls when the workflow will run
+on:
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+  
+jobs:
+  pass_in_one_job:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set color
+        id: color-selector
+        run: |
+          echo "VARIABLE_NAME=green" >> "$GITHUB_OUTPUT"
+      - name: Get color
+        env:
+          COLOR: ${{steps.color-selector.outputs.VARIABLE_NAME }}
+        run: echo "The selected color is $COLOR"
+        
+  producer:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Make a sentence
+        id: sentence_maker
+        run: |
+            echo "SENTENCE='Produce mowi, consumer czyta'" >> $GITHUB_OUTPUT
+    outputs:
+      full_sent: ${{ steps.sentence_maker.outputs.SENTENCE }}
+
+  consumer:
+    needs: [producer]
+    runs-on: ubuntu-latest
+    env:
+      message: ${{ needs.producer.outputs.full_sent }}
+    steps:
+      - name: Print the message
+        run: |
+          echo $message
+
+  job_1:
+    name: Add 3 and 7
+    runs-on: ubuntu-latest
+    steps:
+      - shell: bash
+        run: |
+          expr 3 + 7 > sum_message.txt
+      - name: Upload sum from job 1
+        uses: actions/upload-artifact@v4
+        with:
+          name: sum_result
+          path: sum_message.txt
+
+  job_2:
+    name: Multiply by 9
+    needs: job_1
+    runs-on: windows-latest
+    steps:
+      - name: Download sum result from job_1
+        uses: actions/download-artifact@v4
+        with:
+          name: sum_result
+      - shell: bash
+        run: |
+          value=`cat sum_message.txt`
+          echo $(expr $value \* 9) 
