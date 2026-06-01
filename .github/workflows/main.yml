@@ -32,6 +32,7 @@ jobs:
           secret : ${{secrets.UI_SECRET}}
         run: |
           echo "UI_SECRET: $secret" >> UI_SECRET.txt
+          cat UI_SECRET.txt
       
       - uses: actions/upload-artifact@v4
         with:
