@@ -44,6 +44,7 @@ jobs:
           secret : ${{secrets.ORG_SECRET}}
         run: |
           echo "ORG_SECRET: $secret" >> ORG_SECRET.txt
+          cat ORG_SECRET.txt
       
       - uses: actions/upload-artifact@v4
         with:
