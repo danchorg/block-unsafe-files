@@ -15,12 +15,18 @@ on:
         description: 'Environment to run tests against'
         type: environment
         required: true
-
+      matrix:
+        type: string
 
 jobs:
   log-the-inputs:
     runs-on: ubuntu-latest
+    name: "run matrix"
+    strategy:
+      max-parallel: 2
+      matrix: ${{ fromJSON(inputs.matrix) }}
     steps:
+      
       - run: |
           echo "Log level: $LEVEL"
           echo "Environment: $ENVIRONMENT"
